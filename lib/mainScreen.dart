@@ -67,8 +67,47 @@ class _MainScreenState extends State<MainScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(e.caption),
-                    Text(e.link),
+                    Container(
+                  width: 150.0,
+                      //height: 100.0,
+                      decoration: BoxDecoration(
+                        color: Colors.cyan,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.elliptical(20, 10),
+                          bottomRight: Radius.elliptical(10, 20),
+                        ),
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 3.0,
+                        ),
+                      ),
+                  child: Center(
+                    child: Text(e.caption
+                                    ),
+                  ),
+                    ),
+
+                Container(
+                  //width: 150.0,
+                  //height: 100.0,
+                  decoration: BoxDecoration(
+                    color: Colors.cyan,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.elliptical(20, 10),
+                      bottomRight: Radius.elliptical(10, 20),
+                    ),
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 3.0,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(e.link
+                    ),
+                  ),
+                ),
+
+                    //Text(e.link),
                     (e.icon==null)? Spacer():Icon(e.icon,size: 50,)
                   ],)
             
