@@ -7,7 +7,6 @@ class ItemData{
 
   ItemData(this.caption, this.link, this.icon);
 
-
 }
 
 List<ItemData> Items=<ItemData>[];

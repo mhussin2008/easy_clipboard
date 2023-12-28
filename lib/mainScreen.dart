@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dataFile.dart';
 
 
@@ -17,9 +18,62 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
 
+  BoxDecoration deco=BoxDecoration(
+  color: Colors.cyan,
+  borderRadius: BorderRadius.only(
+    topLeft: Radius.elliptical(20, 10),
+    bottomRight: Radius.elliptical(10, 20),
+  ),
+  border: Border.all(
+    color: Colors.black,
+    width: 3.0,
+  ),
+);
+
     return  Scaffold(
-      appBar: AppBar(
-        title: Center(child: const Text('Easy ClipBoard')),
+      appBar: AppBar(title: Center(child: const Text('Easy ClipBoard')),
+        actions:
+
+           [
+          ElevatedButton(
+          onPressed: () async{
+            SharedPreferences sp=await SharedPreferences.getInstance();
+
+            var captions=Items.map((e) => e.caption).toList();
+            var links=Items.map((e) => e.link).toList();
+            var icons=Items.map((e) => e.icon.toString()).toList();
+
+            await sp.setStringList('captions', captions);
+            await sp.setStringList('links', links);
+            await sp.setStringList('icons', icons);
+
+          },
+          child: Text('Save'),
+        ),
+
+          ElevatedButton(
+            onPressed: () async{
+              SharedPreferences sp=await SharedPreferences.getInstance();
+
+              var captions= await sp.getStringList('captions') ;
+              var links=await sp.getStringList('links') ;
+              var icons=await sp.getStringList('icons') ;
+
+              Items.clear();
+              if(captions !=null){
+              for(int i=0;i<captions.length;i++){
+                print(icons![i]);
+                Items.add(ItemData(captions[i], links![i],
+                    Icons.add)
+                );
+                setState(() {
+
+                });
+              }}
+
+            },
+            child: Text('Load'),
+          )],
       ),
       body: Center(
         child: Column(
@@ -68,42 +122,18 @@ class _MainScreenState extends State<MainScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                  width: 150.0,
+                  //width: 150.0,
                       //height: 100.0,
-                      decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.elliptical(20, 10),
-                          bottomRight: Radius.elliptical(10, 20),
-                        ),
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 3.0,
-                        ),
-                      ),
-                  child: Center(
-                    child: Text(e.caption
-                                    ),
-                  ),
+                      decoration:deco,
+                  child: Text(e.caption
+                                  ),
                     ),
 
                 Container(
                   //width: 150.0,
                   //height: 100.0,
-                  decoration: BoxDecoration(
-                    color: Colors.cyan,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.elliptical(20, 10),
-                      bottomRight: Radius.elliptical(10, 20),
-                    ),
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 3.0,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(e.link
-                    ),
+                  decoration: deco,
+                  child: Text(e.link
                   ),
                 ),
 
