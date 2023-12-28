@@ -18,17 +18,13 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
 
-  BoxDecoration deco=BoxDecoration(
-  color: Colors.cyan,
-  borderRadius: BorderRadius.only(
-    topLeft: Radius.elliptical(20, 10),
-    bottomRight: Radius.elliptical(10, 20),
-  ),
-  border: Border.all(
-    color: Colors.black,
-    width: 3.0,
-  ),
-);
+  BoxDecoration deco=
+  BoxDecoration(
+      border: Border.all(
+        color: Color(0xFF5511FF),
+      ),
+      borderRadius: BorderRadius.all(Radius.circular(20))
+  );
 
     return  Scaffold(
       appBar: AppBar(title: Center(child: const Text('Easy ClipBoard')),
@@ -118,28 +114,41 @@ class _MainScreenState extends State<MainScreen> {
             child: SingleChildScrollView(child:
                 Column(
             children :Items.map((e) =>
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                  //width: 150.0,
-                      //height: 100.0,
+                GestureDetector(
+                  onHorizontalDragEnd: (endDetails)
+                  {
+                    Items.removeAt(
+                    Items.indexWhere((element) => element==e));
+                    setState(() {
+
+                    });
+                  },
+                  onTap: () async {
+                    await Clipboard.setData(ClipboardData(text: e.link));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5),
                       decoration:deco,
-                  child: Text(e.caption
-                                  ),
+                    child: Text(e.caption
+                                    ),
+                      ),
+
+                  Expanded(
+                    child: Container(
+                    padding: EdgeInsets.all(5),
+                      decoration: deco,
+                      child: Text(e.link
+                      ),
                     ),
-
-                Container(
-                  //width: 150.0,
-                  //height: 100.0,
-                  decoration: deco,
-                  child: Text(e.link
                   ),
-                ),
 
-                    //Text(e.link),
-                    (e.icon==null)? Spacer():Icon(e.icon,size: 50,)
-                  ],)
+                      //Text(e.link),
+                      (e.icon==null)? SizedBox(width: 10,):Icon(e.icon,size: 40,)
+                    ],),
+                )
             
             
             ).toList()
@@ -175,12 +184,15 @@ setState(() {
 
   void _addItem() async {
     ClipboardData? clippedText = await Clipboard.getData('text/plain');
+    print(clippedText!.text.toString());
     if(ClipboardData != null){
+      print(Clipboard.kTextPlain);
       Items.add(ItemData( txtController!.text
           , clippedText!.text.toString()
           , (selectedIcon==null)? Icons.add: selectedIcon!)
 
       );
+      txtController!.clear();
           setState(() {
 
             });
