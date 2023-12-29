@@ -55,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
               var links=await sp.getStringList('links') ;
               var icons=await sp.getStringList('icons') ;
 
-              Items.clear();
+              //Items.clear();
               if(captions !=null){
               for(int i=0;i<captions.length;i++){
                 print(icons![i]);
@@ -184,8 +184,9 @@ setState(() {
 
   void _addItem() async {
     ClipboardData? clippedText = await Clipboard.getData('text/plain');
-    print(clippedText!.text.toString());
-    if(ClipboardData != null){
+
+    if(ClipboardData != null && clippedText != null){
+      print(clippedText!.text.toString());
       print(Clipboard.kTextPlain);
       Items.add(ItemData( txtController!.text
           , clippedText!.text.toString()
