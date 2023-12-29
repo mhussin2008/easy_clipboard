@@ -15,6 +15,30 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   TextEditingController? txtController=TextEditingController();
   IconData? selectedIcon;
+  bool loaded=false;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //loadData();
+    // WidgetsBinding.instance.addPostFrameCallback((_)  {
+    //   loadData().then((value) => setState(() {
+    //
+    //   })
+    //   );
+    //
+    //
+    // });
+
+    //loadData();
+
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -50,22 +74,22 @@ class _MainScreenState extends State<MainScreen> {
           ElevatedButton(
             onPressed: () async{
               SharedPreferences sp=await SharedPreferences.getInstance();
-
-              var captions= await sp.getStringList('captions') ;
-              var links=await sp.getStringList('links') ;
-              var icons=await sp.getStringList('icons') ;
-
-              //Items.clear();
-              if(captions !=null){
-              for(int i=0;i<captions.length;i++){
-                print(icons![i]);
-                Items.add(ItemData(captions[i], links![i],
-                    Icons.add)
-                );
+              loadData();
+              // var captions= await sp.getStringList('captions') ;
+              // var links=await sp.getStringList('links') ;
+              // var icons=await sp.getStringList('icons') ;
+              //
+              // //Items.clear();
+              // if(captions !=null){
+              // for(int i=0;i<captions.length;i++){
+              //   print(icons![i]);
+              //   Items.add(ItemData(captions[i], links![i],
+              //       Icons.add)
+              //   );
                 setState(() {
 
                 });
-              }}
+              //}}
 
             },
             child: Text('Load'),
@@ -174,6 +198,8 @@ class _MainScreenState extends State<MainScreen> {
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       iconPackModes: [IconPack.material],
     );
+
+
 setState(() {
 
 });
@@ -201,4 +227,22 @@ setState(() {
 
     }
   }
+
+  Future<void> loadData() async {
+    SharedPreferences sp=await SharedPreferences.getInstance();
+
+    var captions= await sp.getStringList('captions') ;
+    var links=await sp.getStringList('links') ;
+    var icons=await sp.getStringList('icons') ;
+
+    //Items.clear();
+    if(captions !=null){
+      for(int i=0;i<captions.length;i++){
+        print('icon = ${icons![i].toString()}');
+        Items.add(ItemData(captions[i], links![i],
+            Icons.add)
+        );
+  }
+    }
+    }
 }
