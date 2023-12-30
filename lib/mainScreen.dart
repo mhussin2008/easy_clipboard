@@ -106,35 +106,56 @@ class _MainScreenState extends State<MainScreen> {
                         Column(
                             children:
                             Items.asMap().entries.map((e) => GestureDetector(
-                              onHorizontalDragEnd: (endDetails){
-                                Items.removeAt(e.key);
-                                setState(() {
+                              // onHorizontalDragEnd: (endDetails){
+                              //
+                              //   {Items.removeAt(e.key);}
+                              //   setState(() {
+                              //
+                              //   });
+                              // },
+                              onTap: () async {
+                                await Clipboard.setData(
+                                             ClipboardData(text: e.value.link));
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.cyan,
 
-                                });
+                                  content: Text("link copied to clipboard"),
+                                ));
                               },
-                              child: Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceEvenly,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(5),
-                                            decoration: deco,
-                                            child: Text(e.value.caption
-                                            ),
-                                          ),
 
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.all(5),
-                                              decoration: deco,
-                                              child: Text(e.value.link
-                                              ),
-                                            ),
-                                          ),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .spaceEvenly,
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(5),
+                                                  decoration: deco,
+                                                  child: Text(e.value.caption
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10,),
 
-                                          //Text(e.link),
+                                                Expanded(
+                                                  child: Container(
+                                                    padding: const EdgeInsets.all(5),
+                                                    decoration: deco,
+                                                    child: Text(e.value.link
+                                                    ),
+                                                  ),
+                                                ),
 
-                                        ],),
+                                                //Text(e.link),
+
+                                              ],),
+                                  ),
+                                  Container(height: 20,)
+                                ],
+                              ),
                             )).toList()
 
                             // Items.map((e) =>
