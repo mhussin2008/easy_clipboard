@@ -1,8 +1,6 @@
-import 'package:easy_clipboard/mainScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
-import 'mainScreenTest.dart';
+import 'mainScreen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainScreenTest(),
+      home: const MainScreen(),
     );
   }
 }
