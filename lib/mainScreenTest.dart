@@ -125,49 +125,86 @@ class _MainScreenTestState extends State<MainScreenTest> {
                       Expanded(
                         child: SingleChildScrollView(child:
                         Column(
-                            children: Items.map((e) =>
-                                GestureDetector(
-                                  onHorizontalDragEnd: (endDetails) {
-                                    Items.removeAt(
-                                        Items.indexWhere((element) =>
-                                        element == e));
-                                    setState(() {
+                            children:
+                            Items.asMap().entries.map((e) => GestureDetector(
+                              onHorizontalDragEnd: (endDetails){
+                                Items.removeAt(e.key);
+                                setState(() {
 
-                                    });
-                                  },
-                                  onTap: () async {
-                                    await Clipboard.setData(
-                                        ClipboardData(text: e.link));
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment
-                                        .spaceEvenly,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(5),
-                                        decoration: deco,
-                                        child: Text(e.caption
-                                        ),
-                                      ),
-
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.all(5),
-                                          decoration: deco,
-                                          child: Text(e.link
+                                });
+                              },
+                              child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceEvenly,
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(5),
+                                            decoration: deco,
+                                            child: Text(e.value.caption
+                                            ),
                                           ),
-                                        ),
-                                      ),
 
-                                      //Text(e.link),
-                                      (e.icon == null)
-                                          ? SizedBox(width: 10,)
-                                          : Icon(e.icon, size: 40,)
-                                    ],),
-                                )
+                                          Expanded(
+                                            child: Container(
+                                              padding: EdgeInsets.all(5),
+                                              decoration: deco,
+                                              child: Text(e.value.link
+                                              ),
+                                            ),
+                                          ),
 
+                                          //Text(e.link),
+                                          (e.value.icon == null)
+                                              ? SizedBox(width: 10,)
+                                              : Icon(e.value.icon, size: 40,)
+                                        ],),
+                            )).toList()
 
-                            ).toList()
+                            // Items.map((e) =>
+                            //     GestureDetector(
+                            //       onHorizontalDragEnd: (endDetails) {
+                            //         // int _i=Items.indexWhere((element) =>
+                            //         // element == e);
+                            //         // Items.removeAt(_i
+                            //         //     );
+                            //         print('index=$_i');
+                            //         setState(() {
+                            //
+                            //         });
+                            //       },
+                            //       onTap: () async {
+                            //         await Clipboard.setData(
+                            //             ClipboardData(text: e.link));
+                            //       },
+                            //       child: Row(
+                            //         mainAxisAlignment: MainAxisAlignment
+                            //             .spaceEvenly,
+                            //         children: [
+                            //           Container(
+                            //             padding: EdgeInsets.all(5),
+                            //             decoration: deco,
+                            //             child: Text(e.caption
+                            //             ),
+                            //           ),
+                            //
+                            //           Expanded(
+                            //             child: Container(
+                            //               padding: EdgeInsets.all(5),
+                            //               decoration: deco,
+                            //               child: Text(e.link
+                            //               ),
+                            //             ),
+                            //           ),
+                            //
+                            //           //Text(e.link),
+                            //           (e.icon == null)
+                            //               ? SizedBox(width: 10,)
+                            //               : Icon(e.icon, size: 40,)
+                            //         ],),
+                            //     )
+                            //
+                            //
+                            // ).toList()
 
                         )),
                       ) : CircularProgressIndicator();
@@ -226,13 +263,14 @@ class _MainScreenTestState extends State<MainScreenTest> {
   }
 
   Future<void> loadData() async {
+    if(loaded==true) return;
     SharedPreferences sp=await SharedPreferences.getInstance();
 
     var captions= await sp.getStringList('captions') ;
     var links=await sp.getStringList('links') ;
     var icons=await sp.getStringList('icons') ;
 
-    //Items.clear();
+    Items.clear();
     if(captions !=null){
       for(int i=0;i<captions.length;i++){
         print('icon = ${icons![i].toString()}');
@@ -240,9 +278,10 @@ class _MainScreenTestState extends State<MainScreenTest> {
             Icons.add)
         );
 
-        loaded=true;
+
       }
     }
+    loaded=true;
   }
 }
 
