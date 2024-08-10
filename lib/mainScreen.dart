@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:easy_clipboard/DialogScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,28 +34,30 @@ class _MainScreenState extends State<MainScreen> {
     );
 
     return Scaffold(
-        appBar: AppBar(title:const  Center(child:  Text('Easy ClipBoard')),
+        appBar: AppBar(
+          leading: IconButton(onPressed: () async {
+            await save_Data();
+            await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            exit(0);
+            }, icon: Icon(
+              color: Colors.red,
+              Icons.close)),
+          title:const  Center(child:  Text(
+              style: TextStyle(fontSize: 16),
+              'Easy ClipBoard')),
           actions:
 
           [
             ElevatedButton(
               onPressed: () async {
-                SharedPreferences sp = await SharedPreferences.getInstance();
-
-                var captions = Items.map((e) => e.caption).toList();
-                var links = Items.map((e) => e.link).toList();
-                var icons = Items.map((e) => e.icon.toString()).toList();
-
-                await sp.setStringList('captions', captions);
-                await sp.setStringList('links', links);
-                await sp.setStringList('icons', icons);
+                await save_Data();
               },
               child: const Text('Save'),
             ),
 
             ElevatedButton(
               onPressed: () async {
-                loadData();
+                await loadData();
                 setState(() {
 
                 });
@@ -80,8 +85,8 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          _addItem();
+                        onPressed: () async {
+                          await _addItem();
                         },
                         style: ElevatedButton.styleFrom(
                             shape: const StadiumBorder()),
@@ -97,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
 
                 FutureBuilder(
-                    future: loadData(),
+                    future:  loadData(),
                     builder: (BuildContext context,
                         AsyncSnapshot<void> snapshot) {
                       return (loaded == true) ?
@@ -106,13 +111,28 @@ class _MainScreenState extends State<MainScreen> {
                         Column(
                             children:
                             Items.asMap().entries.map((e) => GestureDetector(
-                              // onHorizontalDragEnd: (endDetails){
-                              //
-                              //   {Items.removeAt(e.key);}
-                              //   setState(() {
-                              //
-                              //   });
-                              // },
+                               onHorizontalDragEnd: (endDetails) async {
+
+                                {
+                                  print('ok');
+
+                                  String result = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) => const DialogScreen(msgComplement: 'هذا العنصر',));
+
+                                  //print(result);
+                                  if (result == 'OK') {
+                                    //print('deleting');
+                                    Items.removeAt(e.key);
+                                  }
+
+
+
+                                }
+                                setState(() {
+
+                                });
+                               },
                               onTap: () async {
                                 await Clipboard.setData(
                                              ClipboardData(text: e.value.link));
@@ -158,51 +178,7 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                             )).toList()
 
-                            // Items.map((e) =>
-                            //     GestureDetector(
-                            //       onHorizontalDragEnd: (endDetails) {
-                            //         // int _i=Items.indexWhere((element) =>
-                            //         // element == e);
-                            //         // Items.removeAt(_i
-                            //         //     );
-                            //         print('index=$_i');
-                            //         setState(() {
-                            //
-                            //         });
-                            //       },
-                            //       onTap: () async {
-                            //         await Clipboard.setData(
-                            //             ClipboardData(text: e.link));
-                            //       },
-                            //       child: Row(
-                            //         mainAxisAlignment: MainAxisAlignment
-                            //             .spaceEvenly,
-                            //         children: [
-                            //           Container(
-                            //             padding: EdgeInsets.all(5),
-                            //             decoration: deco,
-                            //             child: Text(e.caption
-                            //             ),
-                            //           ),
-                            //
-                            //           Expanded(
-                            //             child: Container(
-                            //               padding: EdgeInsets.all(5),
-                            //               decoration: deco,
-                            //               child: Text(e.link
-                            //               ),
-                            //             ),
-                            //           ),
-                            //
-                            //           //Text(e.link),
-                            //           (e.icon == null)
-                            //               ? SizedBox(width: 10,)
-                            //               : Icon(e.icon, size: 40,)
-                            //         ],),
-                            //     )
-                            //
-                            //
-                            // ).toList()
+
 
                         )),
                       ) : const CircularProgressIndicator();
@@ -223,15 +199,15 @@ class _MainScreenState extends State<MainScreen> {
 
 
 
-  void _addItem() async {
+  Future<void> _addItem() async {
     ClipboardData? clippedText = await Clipboard.getData('text/plain');
 
-    if(clippedText != null){
+    if(clippedText != null && txtController?.text !='' && txtController?.text !=null  ){
       print(clippedText.text.toString());
       print(Clipboard.kTextPlain);
       Items.add(ItemData( txtController!.text
           , clippedText.text.toString()
-          , (selectedIcon==null)? Icons.add: selectedIcon!)
+          )
 
       );
       txtController!.clear();
@@ -249,20 +225,33 @@ class _MainScreenState extends State<MainScreen> {
 
     var captions= sp.getStringList('captions') ;
     var links=sp.getStringList('links') ;
-    var icons=sp.getStringList('icons') ;
+    //var icons=sp.getStringList('icons') ;
 
     Items.clear();
-    if(captions !=null){
+
+    if(captions !=null && captions.isNotEmpty){
       for(int i=0;i<captions.length;i++){
-        print('icon = ${icons![i].toString()}');
-        Items.add(ItemData(captions[i], links![i],
-            Icons.add)
+
+        Items.add(ItemData(captions[i], links![i] )
         );
-
-
       }
     }
     loaded=true;
+  }
+
+  Future<void> save_Data() async {
+    var captions = Items.map((e) => e.caption).toList();
+    var links = Items.map((e) => e.link).toList();
+    //var icons = Items.map((e) => e.icon.toString()).toList();
+    SharedPreferences sp=  await SharedPreferences.getInstance();
+    await Future.wait([
+     sp.setStringList('captions', captions),
+     sp.setStringList('links', links),
+     //sp.setStringList('icons', icons)
+       ]);
+
+
+
   }
 }
 
